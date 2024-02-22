@@ -2,6 +2,7 @@ from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone
 import cohere
 from langdetect import detect
+import os
 
 class GenerateAnswer:
     def __init__(self, user_name: str, question: str):
@@ -9,11 +10,11 @@ class GenerateAnswer:
         self.question = question
         self.__model = SentenceTransformer('all-MiniLM-L6-v2') #384 dimensional
         self.__index = self.__init_pinecone()
-        self.__co = cohere.Client('8e99EgyI6c94jF0Q9KEARQDHfZAZC03xDODJx4ks')
+        self.__co = cohere.Client(os.environ.get('COHERE_API_KEY'))
 
     def __init_pinecone(self):
-        pc = Pinecone(api_key="1dd271a4-8d83-4a45-b744-a883e412d992")
-        return pc.Index("chatbot")
+        pc = Pinecone(api_key=os.environ.get('PINECONE_API_KEY'),)
+        return pc.Index(os.environ.get('PINECONE_INDEX'))
 
     def __find_match(self, question: str):
         input_em = self.__model.encode(question).tolist()
@@ -56,7 +57,7 @@ class GenerateAnswer:
                    """
     def detect_language(self, text: str) -> str:
         try:
-            return print(detect(text))
+            return detect(text)
         except:
             return "es"
 
