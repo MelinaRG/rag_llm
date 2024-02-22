@@ -17,7 +17,7 @@ class GenerateAnswer:
 
     # Llamada a la función para generar la respuesta
     def execute(self) -> str:
-        result = self.ask(self.question, self.user_name)
+        result = self.__ask(self.question, self.user_name)
         return result
     
     # Inicialización del pinecone
@@ -42,15 +42,15 @@ class GenerateAnswer:
         return response.text
         
     #Llamada para iniciar el proceso de generación de respuesta
-    def ask(self, question: str, user_name: str) -> str:
+    def __ask(self, question: str, user_name: str) -> str:
         context = self.__find_match(question)
-        language = self.detect_language(question)
-        prompt = self.generate_header(question, user_name, context, language)
+        language = self.__detect_language(question)
+        prompt = self.__generate_header(question, user_name, context, language)
         result = self.__generate_answer(prompt)
         return result
 
     # Generación del prompt
-    def generate_header(self, question: str, user_name: str, context: str, language: str) -> str:
+    def __generate_header(self, question: str, user_name: str, context: str, language: str) -> str:
         return f"""Tu tarea es responder la siguiente pregunta: '{question}' del usuario '{user_name}',
                     utiliza emojis en tus respuestas y responde siempre en base a la información proporcionada
                     en el siguiente contexto: '{context}'. La respuesta debe ser corta, sólo una oración, sé consistente.
@@ -61,7 +61,7 @@ class GenerateAnswer:
                     - user: ¿Where is she from? answer: She is from Canadá.
                    """
     #Detección del lenguaje para mejorar el prompt
-    def detect_language(self, text: str) -> str:
+    def __detect_language(self, text: str) -> str:
         try:
             return detect(text)
         except:
